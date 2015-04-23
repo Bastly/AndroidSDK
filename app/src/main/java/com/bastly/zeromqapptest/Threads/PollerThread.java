@@ -53,7 +53,7 @@ public class PollerThread extends Thread {
             if (pollerCounter != 0) {
 //                Log.d(TAG, "poller before made poll");
                 poller.poll(1000);
-                Log.d(TAG, "poller made poll");
+//                Log.d(TAG, "poller made poll");
                 for (int x = 0; x < poller.getSize(); x++) {
                     if (poller.getItem(x) != null && poller.pollin(x)) {
                         Log.d(TAG, "poller pollin " + x);
