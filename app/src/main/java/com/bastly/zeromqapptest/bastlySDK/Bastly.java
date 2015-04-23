@@ -90,6 +90,7 @@ public class Bastly <T> implements WorkerLost {
 
                             Worker worker = new Worker(ip);
                             worker.addChannel(channel);
+                            worker.setTimeStamp(System.currentTimeMillis());
                             ttl.put(ip, worker);
 
                             poller.register(dataSockets.get(ip), ZMQ.Poller.POLLIN);
