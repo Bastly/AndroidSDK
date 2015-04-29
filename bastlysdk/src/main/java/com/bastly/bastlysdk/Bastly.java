@@ -1,18 +1,18 @@
-package com.bastly.zeromqapptest.bastlySDK;
+package com.bastly.bastlysdk;
 
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.bastly.zeromqapptest.Threads.HealthThread;
-import com.bastly.zeromqapptest.Threads.PollerThread;
-import com.bastly.zeromqapptest.interfaces.MessageListener;
-import com.bastly.zeromqapptest.interfaces.RequestWorker;
-import com.bastly.zeromqapptest.interfaces.WorkerLost;
-import com.bastly.zeromqapptest.models.Worker;
-import com.bastly.zeromqapptest.tasks.ReqAsyncTask;
-import com.bastly.zeromqapptest.utils.Constants;
+import com.bastly.bastlysdk.interfaces.MessageListener;
+import com.bastly.bastlysdk.interfaces.RequestWorker;
+import com.bastly.bastlysdk.interfaces.WorkerLost;
+import com.bastly.bastlysdk.models.Worker;
+import com.bastly.bastlysdk.tasks.ReqAsyncTask;
+import com.bastly.bastlysdk.threads.HealthThread;
+import com.bastly.bastlysdk.threads.PollerThread;
+import com.bastly.bastlysdk.utils.Constants;
 import com.google.gson.Gson;
 
 import org.zeromq.ZMQ;

@@ -1,15 +1,12 @@
-package com.bastly.zeromqapptest.tasks;
+package com.bastly.bastlysdk.tasks;
 
-import android.app.DownloadManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
-import com.bastly.zeromqapptest.interfaces.RequestWorker;
-import com.bastly.zeromqapptest.models.Worker;
-import com.bastly.zeromqapptest.utils.Constants;
+
+import com.bastly.bastlysdk.interfaces.RequestWorker;
+import com.bastly.bastlysdk.models.Worker;
+import com.bastly.bastlysdk.utils.Constants;
 import com.google.gson.Gson;
 
 import org.zeromq.ZMQ;
@@ -38,7 +35,7 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
         ZMQ.Socket socket = context.socket(ZMQ.REQ);
         socket.connect("tcp://" + Constants.ATAHUALPA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CLIENT_REQUEST_WORKER);
 
-//        Log.d(TAG, "sending string to atahualpa on " + Constants.ATAHUALPA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CLIENT_REQUEST_WORKER);
+        Log.d(TAG, "sending string to atahualpa on " + Constants.ATAHUALPA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CLIENT_REQUEST_WORKER);
         socket.send("subscribe", ZMQ.SNDMORE);
         socket.send(this.to, ZMQ.SNDMORE);
         socket.send(this.from, ZMQ.SNDMORE);
@@ -46,16 +43,21 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
         socket.send("ZEROMQ", 0);
 
         String result = new String(socket.recv(0));
+        Log.d(TAG, "Resutl " + result);
         String message = "";
 
         while (socket.hasReceiveMore()) {
             message += new String(socket.recv(0));
         }
 
-        Gson gson = new Gson();
-        givenWorker = gson.fromJson(message, Worker.class);
+        Log.d(TAG, "message: " + message);
 
-//        Log.d(TAG, "RESULT IS:" + givenWorker.getIp());
+        if (!result.equalsIgnoreCase("400")) {
+            Gson gson = new Gson();
+            givenWorker = gson.fromJson(message, Worker.class);
+
+            Log.d(TAG, "RESULT IS:" + givenWorker.getIp());
+        }
 
         socket.close();
         context.term();

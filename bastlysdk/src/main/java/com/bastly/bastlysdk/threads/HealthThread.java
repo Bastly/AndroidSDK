@@ -1,13 +1,12 @@
-package com.bastly.zeromqapptest.Threads;
+package com.bastly.bastlysdk.threads;
 
 import android.util.Log;
 
-import com.bastly.zeromqapptest.interfaces.WorkerLost;
-import com.bastly.zeromqapptest.models.Worker;
-
-import org.zeromq.ZMQ;
+import com.bastly.bastlysdk.interfaces.WorkerLost;
+import com.bastly.bastlysdk.models.Worker;
 
 import java.util.concurrent.ConcurrentHashMap;
+
 
 /**
  * Created by goofyahead on 22/04/15.

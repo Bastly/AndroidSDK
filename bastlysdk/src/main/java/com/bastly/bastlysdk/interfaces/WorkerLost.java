@@ -1,6 +1,7 @@
-package com.bastly.zeromqapptest.interfaces;
+package com.bastly.bastlysdk.interfaces;
 
-import com.bastly.zeromqapptest.models.Worker;
+
+import com.bastly.bastlysdk.models.Worker;
 
 /**
  * Created by goofyahead on 22/04/15.

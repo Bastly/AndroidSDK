@@ -1,4 +1,4 @@
-package com.bastly.zeromqapptest.models;
+package com.bastly.bastlysdk.models;
 
 import java.io.Serializable;
 import java.util.LinkedList;

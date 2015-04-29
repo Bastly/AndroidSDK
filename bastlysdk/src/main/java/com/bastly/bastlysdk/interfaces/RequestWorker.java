@@ -1,4 +1,4 @@
-package com.bastly.zeromqapptest.interfaces;
+package com.bastly.bastlysdk.interfaces;
 
 /**
  * Created by goofyahead on 19/04/15.
