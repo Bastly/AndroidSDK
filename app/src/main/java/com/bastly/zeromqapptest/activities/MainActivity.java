@@ -33,7 +33,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "Activity on create");
-        bastly = new Bastly(FROM, APIKEY, this, this, Orion.class);
+        bastly = new Bastly(FROM, APIKEY, this, Play.class);
 
         speedometer1 = (SpeedometerGauge) findViewById(R.id.speedometer1);
         speedometer2 = (SpeedometerGauge) findViewById(R.id.speedometer2);

@@ -20,6 +20,7 @@ public class HealthThread extends Thread {
 
     public HealthThread (ConcurrentHashMap<String, Worker> ttl, WorkerLost listener){
         this.ttl = ttl;
+        this.setName(HealthThread.class.getName());
         this.listener = listener;
     }
 
