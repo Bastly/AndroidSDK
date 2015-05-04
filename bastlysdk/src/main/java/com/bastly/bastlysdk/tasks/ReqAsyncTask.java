@@ -3,7 +3,6 @@ package com.bastly.bastlysdk.tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 import com.bastly.bastlysdk.interfaces.RequestWorker;
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.utils.Constants;

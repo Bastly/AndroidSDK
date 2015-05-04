@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.utils.Constants;
 

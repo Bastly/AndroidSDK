@@ -1,7 +1,8 @@
 package com.bastly.bastlysdk.interfaces;
 
 /**
- * Created by goofyahead on 20/04/15.
+ *
+ * @param <T> is the class that you want to be populated when you receive a callback
  */
 public interface MessageListener <T>{
     void onMessageReceived(String channel, T message);

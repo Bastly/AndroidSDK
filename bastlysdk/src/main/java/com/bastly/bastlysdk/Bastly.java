@@ -40,6 +40,16 @@ public class Bastly <T> implements WorkerLost {
     private ConcurrentHashMap<String, Worker> ttl;
     private HashMap<ZMQ.Socket, String> socketMapToIp;
 
+    /**
+     * Bastly constructor, you need to give all the parameters in order to work correctly.
+     *
+     * @param userId Your userId this is the id you will be recognized as
+     * @param apiKey Your Bastly APIKEY it can be found on your account or in the registration email
+     * @param context Application context, you should pass your courrent activity Context
+     * @param listener Callbacks to receive the messages, usually pass this and implement the MessageListener interface on your
+     *                 current activity.
+     * @param messageClass Its the class that represents your data to be transfered, a model class.
+     */
     public Bastly (String userId, String apiKey, Context context, final MessageListener listener, final Class<T> messageClass) {
 
         this.apiKey = apiKey;
@@ -55,6 +65,10 @@ public class Bastly <T> implements WorkerLost {
         };
     }
 
+    /**
+     * Register to  an specific channel that you want to listen to
+     * @param channel a given string to listen to like "newsUpdates"
+     */
     public void registerChannel (final String channel) {
         // ask for a worker ip in Thread, get callback
         new ReqAsyncTask(new RequestWorker() {
@@ -112,10 +126,17 @@ public class Bastly <T> implements WorkerLost {
         }, this.from, channel, this.apiKey).execute();
     }
 
+    /**
+     * Unregister an specific channel
+     * @param channel Given channel id that you dont want to receive more comunications from.
+     */
     public void unResgiterChannel (final String channel) {
 
     }
 
+    /**
+     * Info method to tell Bastly SDK that your current activity is on Resumed status.
+     */
     public void onResume() {
         Log.d(TAG, "on Resume called");
         poller = new ZMQ.Poller(10);
@@ -138,6 +159,9 @@ public class Bastly <T> implements WorkerLost {
         healthTrhead.start();
     }
 
+    /**
+     * Info method to tell Bastly SDK that your current activity is on Paused status.
+     */
     public void onPause() {
         Log.d(TAG, "on Pause called");
         pollerThread.stopMe();

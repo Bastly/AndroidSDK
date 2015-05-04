@@ -10,13 +10,15 @@ import android.view.MenuItem;
 
 import com.bastly.bastlysdk.Bastly;
 import com.bastly.bastlysdk.interfaces.MessageListener;
+import com.bastly.bastlysdk.interfaces.OrionListener;
 import com.bastly.bastlysdk.models.Attributes;
 import com.bastly.bastlysdk.models.Orion;
 import com.bastly.zeromqapptest.R;
+import com.bastly.zeromqapptest.models.Play;
 import com.cardiomood.android.controls.gauge.SpeedometerGauge;
 
 
-public class MainActivity extends ActionBarActivity implements MessageListener<Orion> {
+public class MainActivity extends ActionBarActivity implements MessageListener<Play>, OrionListener {
     private static final String TAG = MainActivity.class.getName();
     private Handler handler;
     private static final String FROM = "goofyahead";
@@ -37,7 +39,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<O
         speedometer2 = (SpeedometerGauge) findViewById(R.id.speedometer2);
         speedometer3 = (SpeedometerGauge) findViewById(R.id.speedometer3);
 
-        speedometer1.setLabelConverter( new SpeedometerGauge.LabelConverter() {
+        speedometer1.setLabelConverter(new SpeedometerGauge.LabelConverter() {
 
             @Override
             public String getLabelFor(double progress, double maxProgress) {
@@ -55,7 +57,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<O
         speedometer1.addColoredRange(40, 70, Color.YELLOW);
         speedometer1.addColoredRange(70, 100, Color.RED);
 
-        speedometer2.setLabelConverter( new SpeedometerGauge.LabelConverter() {
+        speedometer2.setLabelConverter(new SpeedometerGauge.LabelConverter() {
 
             @Override
             public String getLabelFor(double progress, double maxProgress) {
@@ -74,7 +76,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<O
         speedometer2.addColoredRange(70, 100, Color.RED);
 
 
-        speedometer3.setLabelConverter( new SpeedometerGauge.LabelConverter() {
+        speedometer3.setLabelConverter(new SpeedometerGauge.LabelConverter() {
 
             @Override
             public String getLabelFor(double progress, double maxProgress) {
@@ -131,18 +133,19 @@ public class MainActivity extends ActionBarActivity implements MessageListener<O
     }
 
     @Override
-    public void onMessageReceived(String channel, Orion message) {
-//        Log.d(TAG, "office temperature info: " + message.getAttributes().get(0).getName());
+    public void onMessageReceived(String channel, Play message) {
+
+    }
+
+    @Override
+    public void onOrionMessageReceived(String channel, Orion message) {
         for (Attributes attribute : message.getAttributes()) {
-            if (attribute.getName().equalsIgnoreCase("temperature:Kitchen")){
+            if (attribute.getName().equalsIgnoreCase("temperature:Kitchen")) {
                 speedometer1.setSpeed(Float.parseFloat(attribute.getValue()), 200, 0);
-//                speedometer1.setSpeed(Float.parseFloat(attribute.getValue()), true);
-            } else if (attribute.getName().equalsIgnoreCase("temperature:Entrance")){
+            } else if (attribute.getName().equalsIgnoreCase("temperature:Entrance")) {
                 speedometer2.setSpeed(Float.parseFloat(attribute.getValue()), 200, 0);
-//                gauge2.setTargetValue(Float.parseFloat(attribute.getValue()));
-            } else if (attribute.getName().equalsIgnoreCase("temperature:MeetingRoom")){
+            } else if (attribute.getName().equalsIgnoreCase("temperature:MeetingRoom")) {
                 speedometer3.setSpeed(Float.parseFloat(attribute.getValue()), 200, 0);
-//                gauge3.setTargetValue(Float.parseFloat(attribute.getValue()));
             }
         }
     }

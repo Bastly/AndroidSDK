@@ -1,3 +1,6 @@
+#graddle properties
+gradle.properties
+
 #idea files
 /.idea/workspace.xml
 /.idea/libraries
