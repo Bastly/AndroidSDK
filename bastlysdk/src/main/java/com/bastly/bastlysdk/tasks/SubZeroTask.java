@@ -3,7 +3,6 @@ package com.bastly.bastlysdk.tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-
 import com.bastly.bastlysdk.utils.Constants;
 
 import org.zeromq.ZMQ;

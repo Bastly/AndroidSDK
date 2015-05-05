@@ -5,7 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-
+import com.bastly.bastlysdk.Bastly;
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.utils.Constants;
 
@@ -25,12 +25,13 @@ public class PollerThread extends Thread {
     private ConcurrentHashMap<String, Worker> ttl;
     private HashMap<ZMQ.Socket, String> socketMapToIp;
     private Handler uiHandler;
-    private String msg, msg2;
+    private String msg, from, msg2;
     private int pollerCounter = 0;
     private Worker currentWorker;
 
     public PollerThread (Handler uiHandler, ConcurrentHashMap<String, Worker> ttl, ZMQ.Poller poller, HashMap<ZMQ.Socket, String> socketMapToIp){
         this.ttl = ttl;
+        this.setName(PollerThread.class.getName());
         this.uiHandler = uiHandler;
         this.poller = poller;
         this.socketMapToIp = socketMapToIp;
@@ -50,15 +51,13 @@ public class PollerThread extends Thread {
 
         Log.d(TAG, "RUNNING WORKER THREAD");
         while (!Thread.currentThread().isInterrupted() && ! stop) {
-//            Log.d(TAG, "poller is alive " + pollerCounter);
             if (pollerCounter != 0) {
-//                Log.d(TAG, "poller before made poll");
                 poller.poll(1000);
-//                Log.d(TAG, "poller made poll");
                 for (int x = 0; x < poller.getSize(); x++) {
                     if (poller.getItem(x) != null && poller.pollin(x)) {
                         Log.d(TAG, "poller pollin " + x);
                         msg = new String(poller.getSocket(x).recv(0));
+                        from = poller.getSocket(x).recvStr(0);
                         msg2 = poller.getSocket(x).recvStr(ZMQ.DONTWAIT);
                         if (msg.equalsIgnoreCase(Constants.PING)) {
                             // just update the TTL
@@ -67,11 +66,16 @@ public class PollerThread extends Thread {
                             currentWorker.setTimeStamp(System.currentTimeMillis());
                             ttl.put(socketMapToIp.get(poller.getSocket(x)), currentWorker);
                         } else {
-                            Log.d(TAG, "MSG: " + msg + " : " + msg2);
-
+                            Log.d(TAG,"from:" + from +  "MSG: " + msg + " : " + msg2);
                             Bundle bundle = new Bundle();
+
                             bundle.putString("message", msg2);
                             Message msg = new Message();
+                            if (from.equalsIgnoreCase("ORION")){
+                                msg.arg1 = Bastly.ORION_MESSAGE;
+                            } else {
+                                msg.arg1 = Bastly.DATA_MESSAGE;
+                            }
                             msg.setData(bundle);
                             uiHandler.sendMessage(msg);
                         }

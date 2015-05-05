@@ -25,3 +25,61 @@ dependencies {
     compile 'org.zeromq:jeromq:0.3.4'
     compile 'com.google.code.gson:gson:1.7.2'
 }
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = "1.0.0-release"
+group = "com.bastly"
+
+configurations {
+    archives {
+        extendsFrom configurations.default
+    }
+}
+
+signing {
+    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    configuration = configurations.archives
+    repositories.mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+        repository(url: sonatypeRepo) {
+            authentication(userName: sonatypeUsername,
+                    password: sonatypePassword)
+        }
+
+        pom.project {
+            name 'Android Bastly Library'
+            packaging 'aar'
+            description 'Bastly SDK android library'
+            url 'https://github.com/Bastly/AndroidSDK'
+
+            scm {
+                url 'scm:git@github.com:Bastly/AndroidSDK.git'
+                connection 'scm:git@github.com:Bastly/AndroidSDK.git'
+                developerConnection 'scm:git@github.com:Bastly/AndroidSDK.git'
+            }
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'goofyahead'
+                    name 'Alex Vidal'
+                    email 'alex@bastly.com'
+                }
+            }
+        }
+    }
+}

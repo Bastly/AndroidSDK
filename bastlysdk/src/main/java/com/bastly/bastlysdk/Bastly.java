@@ -1,13 +1,16 @@
 package com.bastly.bastlysdk;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
 import com.bastly.bastlysdk.interfaces.MessageListener;
+import com.bastly.bastlysdk.interfaces.OrionListener;
 import com.bastly.bastlysdk.interfaces.RequestWorker;
 import com.bastly.bastlysdk.interfaces.WorkerLost;
+import com.bastly.bastlysdk.models.Orion;
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.tasks.ReqAsyncTask;
 import com.bastly.bastlysdk.threads.HealthThread;
@@ -26,6 +29,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Bastly <T> implements WorkerLost {
 
     private static final String TAG = Bastly.class.getName();
+    public static final int ORION_MESSAGE = 1;
+    public static final int DATA_MESSAGE = 2;
+    private OrionListener orionListener;
     private PollerThread pollerThread;
     private HealthThread healthTrhead;
     private ZMQ.Context context = ZMQ.context(1);
@@ -40,21 +46,58 @@ public class Bastly <T> implements WorkerLost {
     private ConcurrentHashMap<String, Worker> ttl;
     private HashMap<ZMQ.Socket, String> socketMapToIp;
 
-    public Bastly (String userId, String apiKey, Context context, final MessageListener listener, final Class<T> messageClass) {
+    /**
+     * Bastly constructor, you need to give all the parameters in order to work correctly.
+     *
+     * @param userId Your userId this is the id you will be recognized as
+     * @param apiKey Your Bastly APIKEY it can be found on your account or in the registration email
+     * @param contextActivity Current activity context, you should pass your courrent activity Context
+     * @param messageClass Its the class that represents your data to be transfered, a model class.
+     */
+    public Bastly (String userId, String apiKey, Activity contextActivity, final Class<T> messageClass) {
 
         this.apiKey = apiKey;
         this.from = userId;
-        this.listener = listener;
 
-        uiHandler = new Handler(context.getMainLooper()) {
+        if (contextActivity instanceof MessageListener) {
+            listener = (MessageListener) contextActivity;
+        }
+
+        if (contextActivity instanceof OrionListener){
+            orionListener = (OrionListener) contextActivity;
+        }
+
+        uiHandler = new Handler(contextActivity.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.d(TAG, "on UI thread msg " );
-                listener.onMessageReceived("channel", gson.fromJson(msg.getData().getString("message"), messageClass) );
+                Log.d(TAG, "on UI thread msg ");
+                switch (msg.arg1) {
+                    case ORION_MESSAGE:
+                        if (orionListener != null) {
+                            orionListener.onOrionMessageReceived("channel", gson.fromJson(msg.getData().getString("message"), Orion.class) );
+                        } else {
+                            Log.e(TAG, "Your activity needs to implement OrionListener to receive messages.");
+                            throw new ClassCastException("Your activity needs to implement OrionListener to receive messages.");
+                        }
+                        break;
+                    case DATA_MESSAGE:
+                        if (listener != null) {
+                            listener.onMessageReceived("channel", gson.fromJson(msg.getData().getString("message"), messageClass) );
+                        } else {
+                            Log.e(TAG, "Your activity needs to implement MessageListener to receive messages.");
+                            throw new ClassCastException("Your activity needs to implement onMessageListener to receive data messages");
+                        }
+                        break;
+                }
+
             }
         };
     }
 
+    /**
+     * Register to  an specific channel that you want to listen to
+     * @param channel a given string to listen to like "newsUpdates"
+     */
     public void registerChannel (final String channel) {
         // ask for a worker ip in Thread, get callback
         new ReqAsyncTask(new RequestWorker() {
@@ -112,10 +155,17 @@ public class Bastly <T> implements WorkerLost {
         }, this.from, channel, this.apiKey).execute();
     }
 
+    /**
+     * Unregister an specific channel
+     * @param channel Given channel id that you dont want to receive more comunications from.
+     */
     public void unResgiterChannel (final String channel) {
 
     }
 
+    /**
+     * Info method to tell Bastly SDK that your current activity is on Resumed status.
+     */
     public void onResume() {
         Log.d(TAG, "on Resume called");
         poller = new ZMQ.Poller(10);
@@ -138,6 +188,9 @@ public class Bastly <T> implements WorkerLost {
         healthTrhead.start();
     }
 
+    /**
+     * Info method to tell Bastly SDK that your current activity is on Paused status.
+     */
     public void onPause() {
         Log.d(TAG, "on Pause called");
         pollerThread.stopMe();
