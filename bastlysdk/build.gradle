@@ -1,4 +1,7 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'signing'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 22
@@ -20,66 +23,75 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.cardiomood.android:android-widgets:0.1.1'
-    compile 'org.zeromq:jeromq:0.3.4'
-    compile 'com.google.code.gson:gson:1.7.2'
+    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile ('org.zeromq:jeromq:0.3.4@jar') {transitive=true}
+    compile ('com.google.code.gson:gson:1.7.2@jar') {transitive=true}
 }
 
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-version = "1.0.0-release"
+version = "1.0.0"
 group = "com.bastly"
 
-configurations {
-    archives {
-        extendsFrom configurations.default
+task createPom << {
+    pom {
+        project {
+            groupId 'com.bastly'
+            artifactId 'androidSDK'
+            version '1.0.0'
+        }
+    }.writeTo("pom.xml")
+}
+
+//configurations {
+//    archives {
+//        extendsFrom configurations.default
+//    }
+//}
+
+//task infoJar {
+//    into('lib') {
+//        println "includeInJar: " + configurations.compile.collect { File file -> file }
+//        from configurations.compile
+//    }
+//}
+
+task sourcesJar(type: Jar) {
+    into('libs') {
+        from configurations.compile
     }
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
 }
 
-signing {
-    required { has("release") && gradle.taskGraph.hasTask("uploadArchives") }
-    sign configurations.archives
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
-uploadArchives {
-    configuration = configurations.archives
-    repositories.mavenDeployer {
-        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
-        repository(url: sonatypeRepo) {
-            authentication(userName: sonatypeUsername,
-                    password: sonatypePassword)
-        }
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
 
-        pom.project {
-            name 'Android Bastly Library'
-            packaging 'aar'
-            description 'Bastly SDK android library'
-            url 'https://github.com/Bastly/AndroidSDK'
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-            scm {
-                url 'scm:git@github.com:Bastly/AndroidSDK.git'
-                connection 'scm:git@github.com:Bastly/AndroidSDK.git'
-                developerConnection 'scm:git@github.com:Bastly/AndroidSDK.git'
-            }
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
 
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-
-            developers {
-                developer {
-                    id 'goofyahead'
-                    name 'Alex Vidal'
-                    email 'alex@bastly.com'
-                }
-            }
-        }
+    configurations = ['archives']
+    pkg {
+        userOrg = "bastly"
+        repo = "releases"
+        name = "AndroidSDK"
+        websiteUrl = "http://bastly.com"
+        vcsUrl = "git@github.com:Bastly/AndroidSDK.git"
+        licenses = ["AGPLv3"]
+        publish = true
     }
 }
