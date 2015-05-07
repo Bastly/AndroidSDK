@@ -33,4 +33,10 @@ public class Play implements Serializable{
     public void setStrength(int strength) {
         this.strength = strength;
     }
+
+    public Play(String spell, String material, int strength) {
+        this.spell = spell;
+        this.material = material;
+        this.strength = strength;
+    }
 }

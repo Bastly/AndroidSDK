@@ -57,14 +57,18 @@ public class PollerThread extends Thread {
                     if (poller.getItem(x) != null && poller.pollin(x)) {
                         Log.d(TAG, "poller pollin " + x);
                         msg = new String(poller.getSocket(x).recv(0));
+                        if (poller.getSocket(x) != null) // safety checkers TODO review
                         from = poller.getSocket(x).recvStr(0);
+                        if (poller.getSocket(x) != null) // safety checkers TODO review
                         msg2 = poller.getSocket(x).recvStr(ZMQ.DONTWAIT);
                         if (msg.equalsIgnoreCase(Constants.PING)) {
                             // just update the TTL
-                            currentWorker = ttl.get(socketMapToIp.get(poller.getSocket(x)));
-                            Log.d(TAG, "PING from " + currentWorker.getIp());
-                            currentWorker.setTimeStamp(System.currentTimeMillis());
-                            ttl.put(socketMapToIp.get(poller.getSocket(x)), currentWorker);
+                            if (poller.getSocket(x) != null) { // safety checkers TODO review
+                                currentWorker = ttl.get(socketMapToIp.get(poller.getSocket(x)));
+                                Log.d(TAG, "PING from " + currentWorker.getIp());
+                                currentWorker.setTimeStamp(System.currentTimeMillis());
+                                ttl.put(socketMapToIp.get(poller.getSocket(x)), currentWorker);
+                            }
                         } else {
                             Log.d(TAG,"from:" + from +  "MSG: " + msg + " : " + msg2);
                             Bundle bundle = new Bundle();

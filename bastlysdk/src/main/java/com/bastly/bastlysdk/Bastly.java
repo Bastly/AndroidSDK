@@ -13,6 +13,7 @@ import com.bastly.bastlysdk.interfaces.WorkerLost;
 import com.bastly.bastlysdk.models.Orion;
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.tasks.ReqAsyncTask;
+import com.bastly.bastlysdk.tasks.SendMsgAsyncTask;
 import com.bastly.bastlysdk.threads.HealthThread;
 import com.bastly.bastlysdk.threads.PollerThread;
 import com.bastly.bastlysdk.utils.Constants;
@@ -196,6 +197,10 @@ public class Bastly <T> implements WorkerLost {
         pollerThread.stopMe();
         pollerThread.setPollerCounter(0);
         healthTrhead.stopMe();
+    }
+
+    public void send(String channel, T message){
+        new SendMsgAsyncTask<T>(from, channel, apiKey, message).execute();
     }
 
     @Override
