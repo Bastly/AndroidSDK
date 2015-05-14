@@ -1,5 +1,6 @@
 #graddle properties
 gradle.properties
+*.iml
 
 #idea files
 .idea/*
