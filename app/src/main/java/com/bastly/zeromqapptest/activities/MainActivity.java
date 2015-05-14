@@ -24,7 +24,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
     private static final String FROM = "goofyahead";
     private static final String TO = "goofyahead";
     private static final String APIKEY = "apikey";
-    private Bastly<Orion> bastly;
+    private Bastly<Play> bastly;
 
     private SpeedometerGauge speedometer1, speedometer2, speedometer3;
 
@@ -34,6 +34,8 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
         setContentView(R.layout.activity_main);
         Log.d(TAG, "Activity on create");
         bastly = new Bastly(FROM, APIKEY, this, Play.class);
+
+        bastly.send("paco", new Play("fireball", "fire", 8));
 
         speedometer1 = (SpeedometerGauge) findViewById(R.id.speedometer1);
         speedometer2 = (SpeedometerGauge) findViewById(R.id.speedometer2);
