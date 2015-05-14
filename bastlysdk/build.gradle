@@ -28,7 +28,7 @@ dependencies {
     compile ('com.google.code.gson:gson:1.7.2@jar') {transitive=true}
 }
 
-version = "1.0.0"
+version = "1.0.2"
 group = "com.bastly"
 
 task createPom << {
@@ -41,18 +41,41 @@ task createPom << {
     }.writeTo("pom.xml")
 }
 
-//configurations {
-//    archives {
-//        extendsFrom configurations.default
-//    }
-//}
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'aar'
 
-//task infoJar {
-//    into('lib') {
-//        println "includeInJar: " + configurations.compile.collect { File file -> file }
-//        from configurations.compile
-//    }
-//}
+                // Add your description here
+                name 'AndroidSDK'
+                description = 'Bastly SDK library for android'
+                url 'https://github.com/Bastly/AndroidSDK'
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'goofyahead'
+                        name 'Alex Vidal'
+                        email 'MY_EMAIL'
+                    }
+                }
+                scm {
+                    connection 'git@github.com:Bastly/AndroidSDK.git'
+                    developerConnection 'git@github.com:Bastly/AndroidSDK.git'
+                    url 'https://github.com/Bastly/AndroidSDK'
+                }
+            }
+        }
+    }
+}
 
 task sourcesJar(type: Jar) {
     into('libs') {
