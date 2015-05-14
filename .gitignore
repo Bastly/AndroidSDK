@@ -2,6 +2,7 @@
 gradle.properties
 
 #idea files
+.idea/*
 /.idea/workspace.xml
 /.idea/libraries
 .DS_Store

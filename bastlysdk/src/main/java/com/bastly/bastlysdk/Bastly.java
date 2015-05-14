@@ -20,6 +20,8 @@ import com.google.gson.Gson;
 
 import org.zeromq.ZMQ;
 
+import java.lang.Override;
+import java.lang.Runnable;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -186,6 +188,13 @@ public class Bastly <T> implements WorkerLost {
 
         pollerThread.start();
         healthTrhead.start();
+
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        },5 * 60 * 1000);
     }
 
     /**
@@ -196,6 +205,7 @@ public class Bastly <T> implements WorkerLost {
         pollerThread.stopMe();
         pollerThread.setPollerCounter(0);
         healthTrhead.stopMe();
+        uiHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
