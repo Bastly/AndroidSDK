@@ -19,7 +19,7 @@ In your build.graddle add bastly SDK as a dependency
 
 Your build.graddle should look something like this:
 
-
+```java
      apply plugin: 'com.android.application'
    
      android {
@@ -45,6 +45,7 @@ Your build.graddle should look something like this:
      compile 'com.android.support:appcompat-v7:22.1.1'  
      compile 'com.bastly:bastlysdk:1.0.5'   
      }  
+```
 
 ##Eclipse installation
 
