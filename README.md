@@ -57,13 +57,13 @@ Download the jar sources from our [bintray repo](https://bintray.com/bastly/rele
 ##Set up
 
 Declare a bastly field in your activity and set it up on your onCreate method:
-
+```java
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bastly = new Bastly(FROM, APIKEY, MESSAGECALLBACK, MODEL);
-
+```
 Bastly takes some parameters being:
 
 * FROM  
@@ -76,17 +76,17 @@ Bastly takes some parameters being:
  your java class that represents the messages you are sending and receiving, its a class that you generate to facilitate sending and receiving information. Ex: a Play class with spell, strength, material fields representing a play from a player.  
  
 An example usage could be something like this.
-
+```java
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bastly = new Bastly("USER1234", "DEMOKEY", this, Play.class);
-  
+```
 Activity class sample implementing the messageListener interface and method overriding message callback
 
 ***MainActivity.java***
-
+```java
     public class MainActivity extends ActionBarActivity implements MessageListener<Play> {  
     private Bastly<Play> bastly;
 
@@ -101,12 +101,12 @@ Activity class sample implementing the messageListener interface and method over
     public void onMessageReceived(String channel, Play message) {
        Log.d("SAMPLE", "spell received" + message.getSpell());
     }
-
+```
 Example of a message class, you should create this class as a holder of the information that you want to send and receive.
 Its important that your class implements the ***serializable*** interface.
 
 ***Play.java***
-
+```java
     public class Play implements Serializable {  
     private String spell;
     private String material;
@@ -130,7 +130,7 @@ Its important that your class implements the ***serializable*** interface.
         return strength;
     }
     }  
-
+```
 ##Send messages
 
 To send message to a channel or user just call bastly.send
