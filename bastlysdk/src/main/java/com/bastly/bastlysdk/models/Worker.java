@@ -8,12 +8,12 @@ import java.util.LinkedList;
  */
 public class Worker implements Serializable{
 
-    private String ip;
+    private String workerIp;
     private LinkedList<String> channels = new LinkedList<>();
     private long timeStamp = -1;
 
     public Worker(String ip) {
-        this.ip = ip;
+        this.workerIp = ip;
     }
 
     public long getTimeStamp() {
@@ -33,10 +33,10 @@ public class Worker implements Serializable{
     }
 
     public String getIp() {
-        return ip;
+        return workerIp;
     }
 
     public void setIp(String ip) {
-        this.ip = ip;
+        this.workerIp = ip;
     }
 }

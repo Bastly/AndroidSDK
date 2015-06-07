@@ -23,7 +23,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
     private Handler handler;
     private static final String FROM = "goofyahead";
     private static final String TO = "goofyahead";
-    private static final String APIKEY = "apikey";
+    private static final String APIKEY = "7b6696d0-0d4a-11e5-8f7e-095df2532ac5";
     private Bastly<Play> bastly;
 
     private SpeedometerGauge speedometer1, speedometer2, speedometer3;
@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
         Log.d(TAG, "Activity on create");
         bastly = new Bastly(FROM, APIKEY, this, Play.class);
 
-        bastly.send("paco", new Play("fireball", "fire", 8));
+//        bastly.send("paco", new Play("fireball", "fire", 8));
 
         speedometer1 = (SpeedometerGauge) findViewById(R.id.speedometer1);
         speedometer2 = (SpeedometerGauge) findViewById(R.id.speedometer2);
@@ -103,7 +103,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
         super.onResume();
         Log.d(TAG, "Activity RESUMED activity asdf");
         bastly.onResume();
-        bastly.registerChannel("testOffice");
+        bastly.registerChannel(APIKEY + ":testOffice");
     }
 
     @Override
@@ -141,6 +141,7 @@ public class MainActivity extends ActionBarActivity implements MessageListener<P
 
     @Override
     public void onOrionMessageReceived(String channel, Orion message) {
+//        Log.d(TAG, "message received");
         for (Attributes attribute : message.getAttributes()) {
             if (attribute.getName().equalsIgnoreCase("temperature:Kitchen")) {
                 speedometer1.setSpeed(Float.parseFloat(attribute.getValue()), 200, 0);

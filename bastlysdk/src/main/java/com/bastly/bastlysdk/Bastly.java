@@ -12,11 +12,13 @@ import com.bastly.bastlysdk.interfaces.RequestWorker;
 import com.bastly.bastlysdk.interfaces.WorkerLost;
 import com.bastly.bastlysdk.models.Orion;
 import com.bastly.bastlysdk.models.Worker;
+import com.bastly.bastlysdk.tasks.PingServerAsyncTask;
 import com.bastly.bastlysdk.tasks.ReqAsyncTask;
 import com.bastly.bastlysdk.tasks.SendMsgAsyncTask;
 import com.bastly.bastlysdk.threads.HealthThread;
 import com.bastly.bastlysdk.threads.PollerThread;
 import com.bastly.bastlysdk.utils.Constants;
+import com.bastly.bastlysdk.utils.RandomString;
 import com.google.gson.Gson;
 
 import org.zeromq.ZMQ;
@@ -34,6 +36,7 @@ public class Bastly <T> implements WorkerLost {
     private static final String TAG = Bastly.class.getName();
     public static final int ORION_MESSAGE = 1;
     public static final int DATA_MESSAGE = 2;
+    public static final int DELAY_MILLIS = 2 * 60 * 1000;
     private OrionListener orionListener;
     private PollerThread pollerThread;
     private HealthThread healthTrhead;
@@ -41,13 +44,14 @@ public class Bastly <T> implements WorkerLost {
     private ZMQ.Poller poller;
     private HashMap<String, ZMQ.Socket> dataSockets;
     private HashMap<String, ZMQ.Socket> pingSockets;
-    private String from = "goofyahead";
+    private String from = "user";
     private String apiKey = "123456";
     private Handler uiHandler;
     private Gson gson = new Gson();
     private MessageListener listener;
     private ConcurrentHashMap<String, Worker> ttl;
     private HashMap<ZMQ.Socket, String> socketMapToIp;
+    private Runnable pingBackend;
 
     /**
      * Bastly constructor, you need to give all the parameters in order to work correctly.
@@ -60,7 +64,9 @@ public class Bastly <T> implements WorkerLost {
     public Bastly (String userId, String apiKey, Activity contextActivity, final Class<T> messageClass) {
 
         this.apiKey = apiKey;
-        this.from = userId;
+        this.from = userId + new RandomString(8).nextString();
+
+
 
         if (contextActivity instanceof MessageListener) {
             listener = (MessageListener) contextActivity;
@@ -73,7 +79,7 @@ public class Bastly <T> implements WorkerLost {
         uiHandler = new Handler(contextActivity.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                Log.d(TAG, "on UI thread msg ");
+//                Log.d(TAG, "on UI thread msg " + msg.getData());
                 switch (msg.arg1) {
                     case ORION_MESSAGE:
                         if (orionListener != null) {
@@ -92,7 +98,15 @@ public class Bastly <T> implements WorkerLost {
                         }
                         break;
                 }
+            }
+        };
 
+        pingBackend = new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "running ping runnable");
+                new PingServerAsyncTask(from, "noone", Bastly.this.apiKey).execute();
+                Log.d(TAG, "SUCCESS POSTING TO HANDLER: " + uiHandler.postDelayed(pingBackend, DELAY_MILLIS));
             }
         };
     }
@@ -190,12 +204,7 @@ public class Bastly <T> implements WorkerLost {
         pollerThread.start();
         healthTrhead.start();
 
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        },5 * 60 * 1000);
+        uiHandler.postDelayed(pingBackend, DELAY_MILLIS);
     }
 
     /**

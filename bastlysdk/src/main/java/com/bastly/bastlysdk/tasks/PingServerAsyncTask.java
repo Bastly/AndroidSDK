@@ -3,24 +3,22 @@ package com.bastly.bastlysdk.tasks;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.bastly.bastlysdk.interfaces.RequestWorker;
 import com.bastly.bastlysdk.models.Worker;
 import com.bastly.bastlysdk.utils.Constants;
-import com.google.gson.Gson;
 
 import org.zeromq.ZMQ;
 
 /**
  * Created by goofyahead on 24/02/15.
  */
-public class ReqAsyncTask extends AsyncTask<String, Void, String> {
+public class PingServerAsyncTask extends AsyncTask<String, Void, String> {
     private static final String TAG = ReqAsyncTask.class.getName();
     private final String from;
     private final String to;
     private final String apikey;
-    private Worker givenWorker;
 
-    public ReqAsyncTask(String from, String to, String apiKey) {
+    public PingServerAsyncTask(String from, String to, String apiKey) {
+        Log.d(TAG, "creating ping task " + apiKey);
         this.from = from;
         this.to = to;
         this.apikey = apiKey;
@@ -28,16 +26,16 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
+        Log.d(TAG, "initializing ping task");
         ZMQ.Context context = ZMQ.context(1);
         ZMQ.Socket socket = context.socket(ZMQ.REQ);
-        socket.connect("tcp://" + Constants.ATAHUALPA_IP + ":" + Constants);
+        socket.connect("tcp://" + Constants.CURACA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CURACA_COMM);
 
-        Log.d(TAG, "sending string to atahualpa on " + Constants.ATAHUALPA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CLIENT_REQUEST_WORKER);
-        socket.send("subscribe", ZMQ.SNDMORE);
+        Log.d(TAG, "sending ping to curaca on " + Constants.CURACA_IP + ":" + Constants.PORT_REQ_REP_ATAHUALPA_CURACA_COMM);
+        socket.send("PING", ZMQ.SNDMORE);
         socket.send(this.to, ZMQ.SNDMORE);
         socket.send(this.from, ZMQ.SNDMORE);
-        socket.send(this.apikey, ZMQ.SNDMORE);
-        socket.send("ZEROMQ", 0);
+        socket.send(this.apikey, 0);
 
         String result = new String(socket.recv(0));
         Log.d(TAG, "Resutl " + result);
@@ -48,27 +46,9 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
         }
 
         Log.d(TAG, "message: " + message);
-
-        if (!result.equalsIgnoreCase("400")) {
-            Gson gson = new Gson();
-            givenWorker = gson.fromJson(message, Worker.class);
-
-            Log.d(TAG, "RESULT IS:" + givenWorker.getIp());
-        }
-
         socket.close();
         context.term();
 
         return result;
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("worker", givenWorker);
-//        Message msg = new Message();
-//        msg.setData(bundle);
-//        uiThreadHandler.sendMessage(msg);
-        callback.onWorkerAssigned(givenWorker.getIp());
     }
 }
