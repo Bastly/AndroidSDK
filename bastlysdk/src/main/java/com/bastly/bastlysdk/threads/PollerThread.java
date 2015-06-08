@@ -55,7 +55,7 @@ public class PollerThread extends Thread {
                 poller.poll(1000);
                 for (int x = 0; x < poller.getSize(); x++) {
                     if (poller.getItem(x) != null && poller.pollin(x)) {
-                        Log.d(TAG, "poller pollin " + x);
+//                        Log.d(TAG, "poller pollin " + x);
                         msg = new String(poller.getSocket(x).recv(0));
                         if (poller.getSocket(x) != null) // safety checkers TODO review
                         from = poller.getSocket(x).recvStr(0);
@@ -65,17 +65,18 @@ public class PollerThread extends Thread {
                             // just update the TTL
                             if (poller.getSocket(x) != null) { // safety checkers TODO review
                                 currentWorker = ttl.get(socketMapToIp.get(poller.getSocket(x)));
-                                Log.d(TAG, "PING from " + currentWorker.getIp());
+//                                Log.d(TAG, "PING from " + currentWorker.getIp());
                                 currentWorker.setTimeStamp(System.currentTimeMillis());
                                 ttl.put(socketMapToIp.get(poller.getSocket(x)), currentWorker);
                             }
                         } else {
-                            Log.d(TAG,"from:" + from +  "MSG: " + msg + " : " + msg2);
+//                            Log.d(TAG,"from:" + from +  "MSG: " + msg + " : " + msg2);
                             Bundle bundle = new Bundle();
 
                             bundle.putString("message", msg2);
                             Message msg = new Message();
-                            if (from.equalsIgnoreCase("ORION")){
+//                            Log.d(TAG, "FROM: " + from);
+                            if (from.contains("ORION")){
                                 msg.arg1 = Bastly.ORION_MESSAGE;
                             } else {
                                 msg.arg1 = Bastly.DATA_MESSAGE;

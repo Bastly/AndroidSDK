@@ -51,11 +51,13 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
 
         Log.d(TAG, "message: " + message);
 
-        if (!result.equalsIgnoreCase("400")) {
+        if (!result.startsWith("40")) {
             Gson gson = new Gson();
             givenWorker = gson.fromJson(message, Worker.class);
 
             Log.d(TAG, "RESULT IS:" + givenWorker.getIp());
+        } else {
+            Log.e(TAG, "ERROR: " + message);
         }
 
         socket.close();
@@ -66,11 +68,8 @@ public class ReqAsyncTask extends AsyncTask<String, Void, String> {
 
     @Override
     protected void onPostExecute(String result) {
-//        Bundle bundle = new Bundle();
-//        bundle.putSerializable("worker", givenWorker);
-//        Message msg = new Message();
-//        msg.setData(bundle);
-//        uiThreadHandler.sendMessage(msg);
-        callback.onWorkerAssigned(givenWorker.getIp());
+        if (!result.startsWith("40")) {
+            callback.onWorkerAssigned(givenWorker.getIp());
+        }
     }
 }
