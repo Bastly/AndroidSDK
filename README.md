@@ -135,6 +135,35 @@ Its important that your class implements the ***serializable*** interface.
 
 To send message to a channel or user just call bastly.send
 
-   
+Send params:
+
+* TO  
+ Channel you want to send the message to. 
+* OBJECT  
+ The object instance you want to send (its the same you declared on the bastly constructor)  
+
+```java
+bastly.send("TOWHOM", new Play("fireball", "fire", 8));
+```   
+
+#Orion specific usage <a name="orion"></a>
+
+If you want to receive messages from Orion you just have to implement OrionListener as a new interface on your Activity.
+
+```java
+public class MainActivity extends ActionBarActivity implements MessageListener<Play>, OrionListener {
+``` 
+
+This will force a new callback method on your activity where you will receive your Orion updates.
+
+```java
+@Override
+public void onOrionMessageReceived(String channel, Orion message) {
+    Log.d(TAG, "update from Orion received");
+    for (Attributes attribute : message.getAttributes()) {
+        // read your updated message here
+    }
+}
+```
 
 Android SDK for Bastly
