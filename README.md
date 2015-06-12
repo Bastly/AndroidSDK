@@ -145,6 +145,15 @@ Send params:
 ```java
 bastly.send("TOWHOM", new Play("fireball", "fire", 8));
 ```   
+##Subscribe to channels
+
+If you want to subscribe to a new channel you just have to call
+
+```java
+bastly.registerChannel("newChannel");
+```
+
+and you will get the updates on your defined callback.
 
 #Orion specific usage <a name="orion"></a>
 
