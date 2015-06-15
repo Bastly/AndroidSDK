@@ -1,13 +1,13 @@
 AndroidSDK
 ==========
-* [Installation](#installation)
+* [Installation]
  * Android Studio (recommended)
  * Eclipse
-* [Usage](#usage)
+* [Usage]
  * Set up
  * Send messages
  * Receive and susbcrive to channels
-* [Orion specific usage](#orion)
+* [Orion specific usage]
 
 #Installation <a name="installation"></a>
 
