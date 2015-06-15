@@ -67,23 +67,15 @@ Declare a bastly field in your activity and set it up on your onCreate method:
 Bastly takes some parameters being:
 
 * FROM  
- current userId, identifies this specific user in the system.  
+ id for this connection/user, a String, identifies this specific connection/user on the system.  
 * APIKEY  
- your apikey, you can find it in your profile in the bastly website.  
+ your apikey, you can find it in your profile at dashboard.bastly.com
 * MESSAGECALLBACK  
  a messageListener implementation, usually define your activity that implements this interface and you will get the callbacks methods where your messages will be received.  
 * MODEL  
  your java class that represents the messages you are sending and receiving, its a class that you generate to facilitate sending and receiving information. Ex: a Play class with spell, strength, material fields representing a play from a player.  
  
 An example usage could be something like this.
-```java
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        bastly = new Bastly("USER1234", "DEMOKEY", this, Play.class);
-```
-Activity class sample implementing the messageListener interface and method overriding message callback
 
 ***MainActivity.java***
 ```java
@@ -98,8 +90,8 @@ Activity class sample implementing the messageListener interface and method over
     }
     
     @Override
-    public void onMessageReceived(String channel, Play message) {
-       Log.d("SAMPLE", "spell received" + message.getSpell());
+    public void onMessageReceived(String channel, Play receivedPlay) {
+       Log.d("SAMPLE", "spell received" + receivedPlay.getSpell());
     }
 ```
 Example of a message class, you should create this class as a holder of the information that you want to send and receive.
@@ -107,7 +99,7 @@ Its important that your class implements the ***serializable*** interface.
 
 ***Play.java***
 ```java
-    public class Play implements Serializable {  
+public class Play implements Serializable {  
     private String spell;
     private String material;
     private int strength;
@@ -129,7 +121,7 @@ Its important that your class implements the ***serializable*** interface.
     public int getStrength() {
         return strength;
     }
-    }  
+}  
 ```
 ##Send messages
 
@@ -140,10 +132,10 @@ Send params:
 * TO  
  Channel you want to send the message to. 
 * OBJECT  
- The object instance you want to send (its the same you declared on the bastly constructor)  
+ The object instance you want to send 
 
 ```java
-bastly.send("TOWHOM", new Play("fireball", "fire", 8));
+bastly.send("destinationChannel", new Play("fireball", "fire", 8));
 ```   
 ##Subscribe to channels
 
