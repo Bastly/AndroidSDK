@@ -13,14 +13,6 @@ AndroidSDK
 
 ##Android Studio installation
 
-Add the repository dependency to your project build graddle
-
-    buildscript {
-    repositories {
-     maven {
-            url  "http://dl.bintray.com/bastly/releases"
-        }
-
 In your build.graddle add bastly SDK as a dependency
 
     compile 'com.bastly:bastlysdk:1.0.3'
