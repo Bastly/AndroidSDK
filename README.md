@@ -47,6 +47,10 @@ Your build.graddle should look something like this:
      }  
 ```
 
+Bastly needs internet connection so don't forget the INTERNET PERMISSION on your manifest!
+```java
+    <uses-permission android:name="android.permission.INTERNET" />
+```
 ##Eclipse installation
 
 Download the jar sources from our [bintray repo](https://bintray.com/bastly/releases/AndroidSDK/view) and add them to your libs folder.
